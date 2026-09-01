@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def check_col(id,df=None, path=None):
+def check_col(id,df=None, path=None,silent=False):
 
     """
     Inspects a DataFrame or file to show nesting levels (max 3 levels, one nested column).
@@ -10,6 +10,7 @@ def check_col(id,df=None, path=None):
         id: column name to use as primary key.
         df: DataFrame to inspect. Optional, but either df or path must be provided.
         path: file path to .json, .xlsx, .csv. Optional, but either df or path must be provided.
+        silent: False to print the result (default), True to suppress output.
 
     Example:
         check_col("cve.id", df=my_dataframe)
@@ -42,20 +43,22 @@ def check_col(id,df=None, path=None):
             df_creato["id"] = df_temp[id].values
             lv3[x] = df_creato
 
-        print("level 1:\n" + "\n".join(list_col_lv1))
-        print("------")
-        print("level 2:\n" + "\n".join(list_col_lv2))
-        print("------")
-        print("level 3:")
+
+        if not silent:
+            print("level 1:\n" + "\n".join(list_col_lv1))
+            print("------")
+            print("level 2:\n" + "\n".join(list_col_lv2))
+            print("------")
+            print("level 3:")
 
 
-        colonne= []
+            colonne= []
 
-        for x, df_lv2 in lv3.items():
-            colonne_str = [col for col in df_lv2.columns if col != "id"]
-            print(f"{x}:")
-            print("  " + "\n  ".join(colonne_str))
-            print(" ")
+            for x, df_lv2 in lv3.items():
+                colonne_str = [col for col in df_lv2.columns if col != "id"]
+                print(f"{x}:")
+                print("  " + "\n  ".join(colonne_str))
+                print(" ")
 
         return list_col_lv1, list_col_lv2, lv3
 
