@@ -65,15 +65,15 @@ def check_col(id,df=None, path=None):
     else: 
         if path.endswith(".json"):
             df_json = pd.read_json(path)
-            check_col_in(df_json,id)
+            return check_col_in(df_json,id)
 
         elif path.endswith(".xlsx"):
             df_xlsx = pd.read_excel(path)
-            check_col_in(df_xlsx,id)
+            return check_col_in(df_xlsx,id)
 
         elif path.endswith(".csv"):
             df_csv = pd.read_csv(path,encoding="utf-8")
-            check_col_in(df_csv,id)
+            return check_col_in(df_csv,id)
 
         else: print("Data format not supported")
         
