@@ -63,7 +63,7 @@ def check_col(id,df=None, path=None,silent=False):
         return list_col_lv1, list_col_lv2, lv3
 
     if (path) is None: 
-        check_col_in(df,id)
+        return check_col_in(df,id)
 
     else: 
         if path.endswith(".json"):
