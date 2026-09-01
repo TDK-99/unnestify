@@ -1,4 +1,6 @@
 import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
 def check_col(id,df=None, path=None,silent=False):
@@ -81,4 +83,76 @@ def check_col(id,df=None, path=None,silent=False):
             return check_col_in(df_csv,id)
 
         else: print("Data format not supported")
+
+
+def visual_nest(id,df=None,path=None):
+
+    """
+    Visualizes the nesting structure of a DataFrame or file as a tree.
+    Uses a graphical tree (matplotlib) if nodes <= 30, otherwise prints an ASCII tree.
+
+    Args:
+        id: column name to use as primary key.
+        df: DataFrame to inspect. Optional, but either df or path must be provided.
+        path: file path to .json, .xlsx, .csv. Optional, but either df or path must be provided.
+
+    Example:
+        visual_nest("id", df=my_dataframe)
+        visual_nest("id", path="/home/user/data.json") or path=your_path_var
+    """
+
+    list_col_lv1, list_col_lv2, lv3 = check_col(id, path=path, silent=True)
+
+
+    def tree_layout(G, root):
+        pos = {}
+        levels = {}
+        for node in nx.bfs_tree(G, root):
+            depth = nx.shortest_path_length(G, root, node)
+            if depth not in levels:
+                levels[depth] = []
+            levels[depth].append(node)
+        for depth, nodes in levels.items():
+            for i, node in enumerate(nodes):
+                pos[node] = (i - len(nodes)/2, -depth)
+        return pos
+
+    def print_tree(G, node, prefix="", is_last=True, is_root=True):
+        if is_root:
+            print(node)
+        else:
+            connector = "└── " if is_last else "├── "
+            print(prefix + connector + node)
+        children = list(G.successors(node))
+        for i, child in enumerate(children):
+            is_last_child = (i == len(children) - 1)
+            if is_root:
+                new_prefix = ""
+            else:
+                new_prefix = prefix + ("    " if is_last else "│   ")
+            print_tree(G, child, new_prefix, is_last_child, is_root=False)
+
+    G = nx.DiGraph()
+
+    for col in list_col_lv1:
+        G.add_edge("DataFrame", col)
+
+    for col in list_col_lv2:
+        G.add_edge(list_col_lv1[0], col)
+
+    for nome_padre, df_figlio in lv3.items():
+        for col in df_figlio.columns:
+            if col != "id":
+                G.add_edge(nome_padre, col)
+
+    n_nodi = G.number_of_nodes()
+
+    if n_nodi <= 30:
+        plt.figure(figsize=(max(20, n_nodi * 1.5), 10))
+        pos = tree_layout(G, "DataFrame")
+        nx.draw(G, pos, with_labels=True, node_size=900, node_color="lightblue", font_size=12, arrows=False)
+        plt.show()
+    else:
+        print("Too many nodes for graphical display, switching to text tree:")
+        print_tree(G, "DataFrame")
         
