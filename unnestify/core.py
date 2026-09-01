@@ -57,6 +57,8 @@ def check_col(id,df=None, path=None):
             print("  " + "\n  ".join(colonne_str))
             print(" ")
 
+        return list_col_lv1, list_col_lv2, lv3
+
     if (path) is None: 
         check_col_in(df,id)
 
