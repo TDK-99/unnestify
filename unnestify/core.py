@@ -39,9 +39,11 @@ def check_col(id,df=None, path=None,silent=False):
 
         for x in list_col_lv2:
             df_temp = df_json[[id, x]].explode(x)
-            df_creato = pd.json_normalize(df_temp[x].tolist())
-            df_creato["id"] = df_temp[id].values
-            lv3[x] = df_creato
+            primo = df_temp[x].iloc[0]
+            if isinstance(primo, dict):
+                df_creato = pd.json_normalize(df_temp[x].tolist())
+                df_creato["id"] = df_temp[id].values
+                lv3[x] = df_creato
 
 
         if not silent:
