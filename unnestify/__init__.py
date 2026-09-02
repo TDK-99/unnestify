@@ -1,3 +1,3 @@
-from .core import check_col
+from .core import check_col, visual_nest
 
-__version__ = "0.1.0"
+__version__ = "0.0.1"
